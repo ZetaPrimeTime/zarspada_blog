@@ -15,14 +15,41 @@ A modern blog platform built with Next.js 14, TypeScript, and PostgreSQL.
   - next-themes
   - @tinymce/tinymce-react
 - ✅ Prisma initialization
+- ✅ Theme customization (Dark/Light mode)
+- ✅ Responsive design
+- ✅ Search functionality
+- ✅ Basic SEO optimization
+- ✅ Social media integration
+
+### In Progress
+- 🔄 Database setup and configuration
+- 🔄 Blog post management system
+- 🔄 Image upload and management
 
 ### Pending
-- [ ] Database setup and configuration
 - [ ] Authentication system implementation
-- [ ] Blog post management system
-- [ ] SEO optimization
-- [ ] Theme customization
+- [ ] Comment system
+- [ ] Rich text editor integration
 - [ ] Deployment configuration
+
+## Features Status
+
+### Completed
+- ✅ Dark/Light theme support
+- ✅ Responsive design
+- ✅ Search functionality
+- ✅ Social media links
+- ✅ Basic SEO setup
+
+### In Progress
+- 🔄 Blog post management
+- 🔄 Image handling
+
+### Pending
+- [ ] User authentication and authorization
+- [ ] Rich text editor integration
+- [ ] Comment system
+- [ ] Advanced SEO features
 
 ## Getting Started
 
