@@ -83,7 +83,6 @@ export default function WelcomePage() {
             <div className="mt-6 space-y-2">
               <p className="text-sm text-gray-500">Available commands:</p>
               <ul className="list-disc list-inside text-gray-400 space-y-1">
-                <li>Dashboard - View and manage all posts</li>
                 <li>New Post - Create a new blog post</li>
                 <li>Edit Posts - Manage existing posts</li>
                 <li>Logout - Exit the Grid</li>

@@ -8,45 +8,26 @@ import { Post } from '@/types/post';
 export default function DashboardPage() {
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchPosts = async () => {
-      console.log('=== Dashboard: Fetching Posts ===');
       try {
         const response = await fetch('/api/posts', {
           credentials: 'include',
           cache: 'no-store'
         });
-        
-        console.log('Posts response:', {
-          status: response.status,
-          ok: response.ok,
-          headers: Object.fromEntries(response.headers.entries())
-        });
 
         if (!response.ok) {
           if (response.status === 401) {
-            console.log('Unauthorized, redirecting to login');
             router.replace('/gridgate');
             return;
           }
-          const errorText = await response.text();
-          console.error('Error response:', errorText);
-          setError('Failed to load posts');
-          return;
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          console.error('Invalid content type:', contentType);
-          setError('Invalid response format from server');
-          return;
+          throw new Error('Failed to fetch posts');
         }
 
         const data = await response.json();
-        console.log('Posts data:', data);
         setPosts(data);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -59,7 +40,7 @@ export default function DashboardPage() {
     fetchPosts();
   }, [router]);
 
-  const handleCreatePost = () => {
+  const handleNewPost = () => {
     router.push('/posts/new');
   };
 
@@ -86,8 +67,8 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-[#0ceef3]">Dashboard</h1>
             <button
-              onClick={handleCreatePost}
-              className="px-4 py-2 bg-[#0ceef3]/10 hover:bg-[#0ceef3]/20 text-[#0ceef3] rounded border border-[#0ceef3]/20"
+              onClick={handleNewPost}
+              className="px-4 py-2 bg-[#0ceef3] text-black rounded hover:bg-[#0ceef3]/90 transition-colors"
             >
               New Post
             </button>
@@ -100,26 +81,29 @@ export default function DashboardPage() {
           )}
 
           {posts.length === 0 ? (
-            <div className="text-gray-400 text-center py-8">
-              No posts found. Click "New Post" to create your first post.
-            </div>
+            <p className="text-gray-400">No posts found. Create your first post to get started.</p>
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
                 <div
                   key={post.id}
-                  className="bg-gray-900/30 border border-[#0ceef3]/10 rounded p-4 hover:border-[#0ceef3]/30 transition-colors"
+                  className="bg-gray-800/50 border border-gray-700 rounded p-4 hover:border-[#0ceef3]/50 transition-colors"
                 >
                   <div className="flex justify-between items-start">
-                    <h2 className="text-lg font-medium text-[#0ceef3]">{post.title}</h2>
+                    <div>
+                      <h2 className="text-xl font-semibold text-[#0ceef3]">{post.title}</h2>
+                      <p className="text-gray-400 mt-1">{post.excerpt}</p>
+                    </div>
                     <button
                       onClick={() => handleEditPost(post.id)}
-                      className="text-sm text-gray-400 hover:text-[#0ceef3] transition-colors"
+                      className="px-3 py-1 text-sm bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors"
                     >
                       Edit
                     </button>
                   </div>
-                  <p className="text-gray-400 mt-2">{post.excerpt}</p>
+                  <div className="mt-2 text-sm text-gray-500">
+                    Last updated: {new Date(post.updatedAt).toLocaleDateString()}
+                  </div>
                 </div>
               ))}
             </div>

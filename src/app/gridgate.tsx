@@ -39,29 +39,9 @@ export default function GridGatePage() {
       });
 
       if (response.ok) {
-        console.log('Login successful, attempting redirection...');
-        
-        // Wait a moment to ensure the cookie is set
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        try {
-          // Try direct window.location first
-          console.log('Attempting direct navigation to /welcome');
-          window.location.href = '/welcome';
-          
-          // Fallback to router after a short delay if still on gridgate page
-          setTimeout(() => {
-            if (window.location.pathname === '/gridgate') {
-              console.log('Direct navigation failed, trying router.replace');
-              router.replace('/welcome');
-            }
-          }, 100);
-        } catch (redirectError) {
-          console.error('Redirection error:', redirectError);
-          // Last resort fallback
-          console.log('All redirection methods failed, trying final fallback');
-          window.location.replace('/welcome');
-        }
+        console.log('Login successful, redirecting to welcome page');
+        // Use replace instead of push to prevent back button issues
+        router.replace('/welcome');
       } else {
         console.log('Login failed:', data.error);
         setError(data.error || 'Invalid credentials');

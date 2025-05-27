@@ -19,7 +19,9 @@ export function middleware(request: NextRequest) {
   console.log('Middleware check:', {
     path: request.nextUrl.pathname,
     hasToken: !!token,
-    cookieNames: request.cookies.getAll().map(c => c.name)
+    cookieNames: request.cookies.getAll().map(c => c.name),
+    url: request.url,
+    referer: request.headers.get('referer')
   });
 
   // Check if the path requires authentication
@@ -27,11 +29,35 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(path)
   );
 
+  // If this is a direct navigation to /welcome from /gridgate, allow it
+  const isFromGridGate = request.headers.get('referer')?.includes('/gridgate');
+  if (request.nextUrl.pathname === '/welcome' && isFromGridGate) {
+    console.log('Allowing direct navigation from GridGate to Welcome');
+    return NextResponse.next();
+  }
+
+  // If this is a navigation between protected pages, allow it
+  const isFromProtectedPath = protectedPaths.some(path => 
+    request.headers.get('referer')?.includes(path)
+  );
+  if (isProtectedPath && isFromProtectedPath) {
+    console.log('Allowing navigation between protected pages:', {
+      from: request.headers.get('referer'),
+      to: request.nextUrl.pathname
+    });
+    return NextResponse.next();
+  }
+
   if (isProtectedPath) {
     if (!token) {
       console.log('No token found, redirecting to login');
       // Redirect to login if no token is present
-      return NextResponse.redirect(new URL('/gridgate', request.url));
+      const response = NextResponse.redirect(new URL('/gridgate', request.url));
+      console.log('Redirect response:', {
+        status: response.status,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      return response;
     }
 
     try {
@@ -42,7 +68,12 @@ export function middleware(request: NextRequest) {
     } catch (error) {
       console.error('Token verification failed:', error);
       // If token is invalid, redirect to login
-      return NextResponse.redirect(new URL('/gridgate', request.url));
+      const response = NextResponse.redirect(new URL('/gridgate', request.url));
+      console.log('Invalid token redirect response:', {
+        status: response.status,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      return response;
     }
   }
 

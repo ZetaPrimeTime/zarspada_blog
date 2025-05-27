@@ -8,6 +8,7 @@ export default function TerminalMenu() {
   const router = useRouter();
 
   const menuItems = [
+    { label: 'Dashboard', path: '/dashboard' },
     { label: 'New Post', path: '/posts/new' },
     { label: 'Edit Posts', path: '/posts/edit' },
     { label: 'Logout', path: '/api/auth/logout' },
