@@ -15,7 +15,24 @@ export default function DashboardPage() {
     const fetchPosts = async () => {
       console.log('=== Dashboard: Fetching Posts ===');
       try {
+        // First check if user is authenticated
+        const authResponse = await fetch('/api/auth/user', {
+          credentials: 'include',
+          cache: 'no-store'
+        });
+
+        if (!authResponse.ok) {
+          console.log('User not authenticated, redirecting to login');
+          router.replace('/gridgate');
+          return;
+        }
+
+        // If authenticated, fetch posts
         const response = await fetch('/api/posts', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
           credentials: 'include',
           cache: 'no-store'
         });
@@ -111,7 +128,12 @@ export default function DashboardPage() {
                   className="bg-gray-900/30 border border-[#0ceef3]/10 rounded p-4 hover:border-[#0ceef3]/30 transition-colors"
                 >
                   <div className="flex justify-between items-start">
-                    <h2 className="text-lg font-medium text-[#0ceef3]">{post.title}</h2>
+                    <div>
+                      <h2 className="text-lg font-medium text-[#0ceef3]">{post.title}</h2>
+                      <p className="text-sm text-gray-500 mt-1">
+                        By {post.author.name} • {new Date(post.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
                     <button
                       onClick={() => handleEditPost(post.id)}
                       className="text-sm text-gray-400 hover:text-[#0ceef3] transition-colors"
@@ -119,7 +141,7 @@ export default function DashboardPage() {
                       Edit
                     </button>
                   </div>
-                  <p className="text-gray-400 mt-2">{post.excerpt}</p>
+                  <p className="text-gray-400 mt-2">{post.content.substring(0, 150)}...</p>
                 </div>
               ))}
             </div>

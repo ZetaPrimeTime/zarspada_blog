@@ -2,18 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export function SearchBar() {
-  const [query, setQuery] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(searchParams?.get('q') || '');
+
+  useEffect(() => {
+    setQuery(searchParams?.get('q') || '');
+  }, [searchParams]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-      setIsOpen(false);
     }
   };
 

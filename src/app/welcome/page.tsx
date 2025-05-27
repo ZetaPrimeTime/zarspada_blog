@@ -16,6 +16,7 @@ export default function WelcomePage() {
     const fetchUserInfo = async () => {
       console.log('=== Welcome: Fetching User Info ===');
       try {
+        console.log('Making request to /api/auth/user...');
         const response = await fetch('/api/auth/user', {
           credentials: 'include',
           cache: 'no-store' // Prevent caching
@@ -30,7 +31,12 @@ export default function WelcomePage() {
         if (response.ok) {
           const data = await response.json();
           console.log('User info data:', data);
-          setUsername(data.username);
+          if (data.isAuthenticated) {
+            setUsername(data.username);
+          } else {
+            console.log('User not authenticated, redirecting to login');
+            router.replace('/gridgate');
+          }
         } else {
           console.log('Failed to fetch user info, redirecting to login');
           router.replace('/gridgate');
@@ -55,42 +61,20 @@ export default function WelcomePage() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-end mb-8">
-          <TerminalMenu />
-        </div>
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
 
-        <div className="bg-gray-900/50 border border-[#0ceef3]/20 rounded-lg p-6">
-          <div className="space-y-4">
-            {error && (
-              <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded">
-                {error}
-              </div>
-            )}
-            
-            <div className="min-h-[2rem]">
-              <Typewriter 
-                text={`Welcome to the Grid, ${username}...`}
-                speed={50}
-                className="text-2xl font-bold text-[#0ceef3]"
-              />
-            </div>
-            <p className="text-gray-400">
-              You have successfully accessed the Grid. Use the terminal menu to navigate through the system.
-            </p>
-            <div className="mt-6 space-y-2">
-              <p className="text-sm text-gray-500">Available commands:</p>
-              <ul className="list-disc list-inside text-gray-400 space-y-1">
-                <li>Dashboard - View and manage all posts</li>
-                <li>New Post - Create a new blog post</li>
-                <li>Edit Posts - Manage existing posts</li>
-                <li>Logout - Exit the Grid</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold mb-8">Welcome, {username}!</h1>
+        <TerminalMenu />
+        <Typewriter text={`Welcome to the Grid, ${username}...`} speed={50} />
       </div>
     </div>
   );

@@ -63,6 +63,8 @@ model Post {
   comments  Comment[]
   author    User      @relation(fields: [authorId], references: [id])
   tags      Tag[]     @relation("PostToTag")
+  image     Image?    @relation(fields: [imageId], references: [id])
+  imageId   String?   @unique
 }
 
 model Comment {
@@ -80,6 +82,18 @@ model Tag {
   id    String @id @default(cuid())
   name  String @unique
   posts Post[] @relation("PostToTag")
+}
+
+model Image {
+  id          String   @id @default(cuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  post        Post?
 }
 
 enum Role {

@@ -19,14 +19,10 @@ export default function Home() {
         <section className="grid gap-8">
           {/* Placeholder for blog posts */}
           <article className="border border-[#0ceef3]/20 rounded-lg p-6 hover:shadow-lg transition-shadow bg-black">
-            <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
-              <Image
-                src="/placeholder.jpg"
-                alt="Getting Started with Next.js"
-                fill
-                className="object-cover"
-                priority
-              />
+            <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden bg-gradient-to-r from-[#0ceef3]/20 to-[#0ceef3]/10">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-[#0ceef3] text-lg">Next.js Development</span>
+              </div>
             </div>
             <h2 className="text-2xl font-semibold mb-2 text-white">Getting Started with Next.js</h2>
             <p className="text-gray-300 mb-4">
@@ -44,14 +40,10 @@ export default function Home() {
           </article>
 
           <article className="border border-[#0ceef3]/20 rounded-lg p-6 hover:shadow-lg transition-shadow bg-black">
-            <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
-              <Image
-                src="/placeholder.jpg"
-                alt="The Future of Web Development"
-                fill
-                className="object-cover"
-                priority
-              />
+            <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden bg-gradient-to-r from-[#0ceef3]/20 to-[#0ceef3]/10">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-[#0ceef3] text-lg">Web Development</span>
+              </div>
             </div>
             <h2 className="text-2xl font-semibold mb-2 text-white">The Future of Web Development</h2>
             <p className="text-gray-300 mb-4">

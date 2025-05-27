@@ -1,32 +1,27 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
+import { verify } from 'jsonwebtoken';
+import type { NextRequest } from 'next/server';
+import type { JwtPayload } from 'jsonwebtoken';
 
-export async function GET() {
-  console.log('=== User Info API: Start ===');
+interface UserPayload extends JwtPayload {
+  username: string;
+}
+
+export async function GET(request: NextRequest) {
+  const token = request.cookies.get('gridgate_token')?.value;
+
+  if (!token) {
+    return NextResponse.json({ isAuthenticated: false }, { status: 200 });
+  }
+
   try {
-    const user = await getCurrentUser();
-    console.log('Current user:', user);
-
-    if (!user) {
-      console.log('No user found, returning 401');
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      );
-    }
-
-    console.log('User found, returning user info');
+    const decoded = verify(token, process.env.NEXTAUTH_SECRET || 'your-secret-key') as UserPayload;
     return NextResponse.json({
-      username: user.username,
-      role: user.role,
+      isAuthenticated: true,
+      username: decoded.username
     });
   } catch (error) {
-    console.error('Error in user info API:', error);
-    return NextResponse.json(
-      { error: 'Invalid token' },
-      { status: 401 }
-    );
-  } finally {
-    console.log('=== User Info API: End ===');
+    console.error('Error verifying token:', error);
+    return NextResponse.json({ isAuthenticated: false }, { status: 200 });
   }
 } 

@@ -20,17 +20,33 @@ A modern blog platform built with Next.js 14, TypeScript, and PostgreSQL.
 - ✅ Search functionality
 - ✅ Basic SEO optimization
 - ✅ Social media integration
+- ✅ GridGate authentication system
+- ✅ Database setup and configuration
 
 ### In Progress
-- 🔄 Database setup and configuration
 - 🔄 Blog post management system
 - 🔄 Image upload and management
+- 🔄 Session management and authentication persistence
+- 🔄 Cloudinary integration for image storage
 
 ### Pending
-- [ ] Authentication system implementation
 - [ ] Comment system
 - [ ] Rich text editor integration
 - [ ] Deployment configuration
+
+## Known Issues
+
+### UI/UX
+- Light/Dark mode icon functionality
+  - Status: In Progress
+  - Impact: Theme switching not working properly
+  - Solution: Implement proper theme toggle with background color changes
+
+### Authentication
+- Session persistence for authenticated routes
+  - Status: In Progress
+  - Impact: Users cannot access protected routes like /posts/new and /posts/edit
+  - Solution: Implement proper session management and token persistence
 
 ## Features Status
 
@@ -40,13 +56,15 @@ A modern blog platform built with Next.js 14, TypeScript, and PostgreSQL.
 - ✅ Search functionality
 - ✅ Social media links
 - ✅ Basic SEO setup
+- ✅ GridGate authentication
+- ✅ Database schema and migrations
 
 ### In Progress
 - 🔄 Blog post management
 - 🔄 Image handling
+- 🔄 Session management
 
 ### Pending
-- [ ] User authentication and authorization
 - [ ] Rich text editor integration
 - [ ] Comment system
 - [ ] Advanced SEO features
@@ -69,11 +87,16 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/zarspada_blog"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-key-here" # Change this to a secure random string
 
+# GridGate Authentication
+ADMINUSER="your-admin-username"     # Username for GridGate authentication
+GRIDGATEKEY="your-admin-password"   # Password for GridGate authentication
+
 # Environment
 NODE_ENV="development"
 ```
 
 2. Update the database connection string in `.env` with your PostgreSQL credentials.
+3. Set your desired GridGate authentication credentials (ADMINUSER and GRIDGATEKEY).
 
 ### Development
 
@@ -121,7 +144,7 @@ src/
 
 ## Features
 
-- [ ] User authentication and authorization
+- [x] User authentication and authorization (GridGate)
 - [ ] Blog post creation and management
 - [ ] Rich text editor integration
 - [ ] SEO optimization

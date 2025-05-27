@@ -2,88 +2,63 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../context/AuthContext';
 
 export default function GridGatePage() {
-  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<string>('');
+  const router = useRouter();
+  const { checkAuth } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
-    setDebugInfo('');
+    setIsLoading(true);
+    console.log('=== Login Form Submit Start ===');
 
     try {
-      console.log('=== Login Attempt Start ===');
-      console.log('Sending credentials:', { username, password });
-      
+      console.log('Sending authentication request...');
       const response = await fetch('/api/auth/gridgate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-        credentials: 'include',
+        credentials: 'include'
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
-      console.log('Login response:', {
-        status: response.status,
-        ok: response.ok,
-        data,
-        headers: Object.fromEntries(response.headers.entries())
-      });
+      console.log('Response data:', data);
 
-      if (response.ok) {
-        console.log('Login successful, attempting redirection...');
-        
-        // Wait a moment to ensure the cookie is set
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        try {
-          // Try direct window.location first
-          console.log('Attempting direct navigation to /welcome');
-          window.location.href = '/welcome';
-          
-          // Fallback to router after a short delay if still on gridgate page
-          setTimeout(() => {
-            if (window.location.pathname === '/gridgate') {
-              console.log('Direct navigation failed, trying router.replace');
-              router.replace('/welcome');
-            }
-          }, 100);
-        } catch (redirectError) {
-          console.error('Redirection error:', redirectError);
-          // Last resort fallback
-          console.log('All redirection methods failed, trying final fallback');
-          window.location.replace('/welcome');
-        }
-      } else {
-        console.log('Login failed:', data.error);
-        setError(data.error || 'Invalid credentials');
-        setDebugInfo(JSON.stringify({
-          status: response.status,
-          data,
-          headers: Object.fromEntries(response.headers.entries())
-        }, null, 2));
+      if (!response.ok) {
+        throw new Error(data.message || 'Authentication failed');
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('An error occurred. Please try again.');
-      setDebugInfo(error instanceof Error ? error.message : String(error));
+
+      if (!data.isAuthenticated) {
+        throw new Error('Authentication failed');
+      }
+
+      // Update auth state
+      await checkAuth();
+      
+      // Redirect to welcome page
+      console.log('Authentication successful, redirecting...');
+      router.replace('/welcome');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred during login');
     } finally {
       setIsLoading(false);
-      console.log('=== Login Attempt End ===');
+      console.log('=== Login Form Submit End ===');
     }
   };
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
+      <div className="w-full max-w-md">
         <div>
           <h2 className="text-3xl font-bold text-center">Grid Gate</h2>
           <p className="mt-2 text-center text-gray-400">
@@ -95,12 +70,6 @@ export default function GridGatePage() {
           {error && (
             <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded">
               {error}
-            </div>
-          )}
-
-          {debugInfo && (
-            <div className="bg-gray-800 border border-gray-700 text-gray-300 px-4 py-2 rounded text-xs font-mono whitespace-pre overflow-auto">
-              {debugInfo}
             </div>
           )}
 
@@ -136,15 +105,13 @@ export default function GridGatePage() {
             </div>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center py-2 px-4 rounded bg-[#0ceef3] text-black font-medium hover:bg-[#0ceef3]/90 transition-colors disabled:opacity-50"
-            >
-              {isLoading ? 'Accessing...' : 'Access Grid'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full flex justify-center py-2 px-4 rounded bg-[#0ceef3] text-black font-medium hover:bg-[#0ceef3]/90 transition-colors disabled:opacity-50"
+          >
+            {isLoading ? 'Accessing...' : 'Access Grid'}
+          </button>
         </form>
       </div>
     </div>

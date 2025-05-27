@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { sign } from 'jsonwebtoken';
 
 export async function POST(request: Request) {
-  console.log('=== GridGate Authentication Start ===');
+  console.log('=== Auth API Start ===');
 
   try {
     const { username, password } = await request.json();
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const responseData = {
       success: true,
       message: 'Authentication successful',
-      isAuthenticated: true  // This field is required by the frontend
+      isAuthenticated: true
     };
     
     console.log('=== Response Data Structure ===');
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     console.log('Cookie set, sending response');
     return response;
   } catch (error) {
-    console.error('Error in gridgate authentication:', error);
+    console.error('Error in authentication:', error);
     return NextResponse.json({ 
       success: false,
       message: 'Internal server error',
