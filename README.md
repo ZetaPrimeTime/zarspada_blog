@@ -14,6 +14,7 @@ A modern blog platform built with Next.js 14, TypeScript, and PostgreSQL.
   - next-seo
   - next-themes
   - @tinymce/tinymce-react
+  - cloudinary
 - ✅ Prisma initialization
 - ✅ Theme customization (Dark/Light mode)
 - ✅ Responsive design
@@ -22,12 +23,11 @@ A modern blog platform built with Next.js 14, TypeScript, and PostgreSQL.
 - ✅ Social media integration
 - ✅ GridGate authentication system
 - ✅ Database setup and configuration
+- ✅ Cloudinary integration for image storage
 
 ### In Progress
 - 🔄 Blog post management system
-- 🔄 Image upload and management
 - 🔄 Session management and authentication persistence
-- 🔄 Cloudinary integration for image storage
 
 ### Pending
 - [ ] Comment system
@@ -47,6 +47,20 @@ A modern blog platform built with Next.js 14, TypeScript, and PostgreSQL.
   - Status: In Progress
   - Impact: Users cannot access protected routes like /posts/new and /posts/edit
   - Solution: Implement proper session management and token persistence
+- GridGate bypass vulnerability
+  - Status: Critical
+  - Impact: Unauthorized users can access /posts/new without authentication
+  - Solution: Implement proper route protection and middleware checks
+
+### Post Management
+- Post creation functionality
+  - Status: Critical
+  - Impact: Users cannot create new posts
+  - Solution: Fix Prisma client initialization and database connection
+- Image upload functionality
+  - Status: Critical
+  - Impact: Users cannot upload images for posts
+  - Solution: Fix Cloudinary configuration and API integration
 
 ## Features Status
 
@@ -91,12 +105,18 @@ NEXTAUTH_SECRET="your-secret-key-here" # Change this to a secure random string
 ADMINUSER="your-admin-username"     # Username for GridGate authentication
 GRIDGATEKEY="your-admin-password"   # Password for GridGate authentication
 
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME="your_cloud_name"    # From Cloudinary dashboard
+CLOUDINARY_API_KEY="your_api_key"         # From Cloudinary dashboard
+CLOUDINARY_API_SECRET="your_api_secret"    # From Cloudinary dashboard
+
 # Environment
 NODE_ENV="development"
 ```
 
 2. Update the database connection string in `.env` with your PostgreSQL credentials.
 3. Set your desired GridGate authentication credentials (ADMINUSER and GRIDGATEKEY).
+4. Add your Cloudinary credentials from your Cloudinary dashboard.
 
 ### Development
 
@@ -148,11 +168,11 @@ src/
 - [ ] Blog post creation and management
 - [ ] Rich text editor integration
 - [ ] SEO optimization
-- [ ] Dark/Light theme support
-- [ ] Responsive design
-- [ ] Image upload and management
+- [x] Dark/Light theme support
+- [x] Responsive design
+- [x] Image upload and management (Cloudinary)
 - [ ] Comment system
-- [ ] Search functionality
+- [x] Search functionality
 
 ## Tech Stack
 
@@ -164,6 +184,7 @@ src/
 - NextAuth.js
 - TinyMCE
 - Next SEO
+- Cloudinary
 
 ## Contributing
 

@@ -24,13 +24,12 @@ const getPost = (slug: string) => {
   return posts[slug as keyof typeof posts];
 };
 
-interface PostPageProps {
-  params: {
-    slug: string;
-  };
+type Props = {
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default async function PostPage({ params }: PostPageProps) {
+export default async function PostPage({ params }: Props) {
   const post = getPost(params.slug);
 
   if (!post) {

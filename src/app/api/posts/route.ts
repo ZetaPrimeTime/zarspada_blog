@@ -1,15 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('=== Posts API: GET Request ===');
     const user = await getCurrentUser();
-    
+
     if (!user) {
       console.log('Unauthorized: No user found');
       return NextResponse.json(
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
     });
 
     console.log('Posts found:', posts.length);
-    return NextResponse.json(posts);
+    return NextResponse.json({ data: posts });
   } catch (error) {
     console.error('Error fetching posts:', error);
     return NextResponse.json(
@@ -70,11 +71,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     console.log('=== Posts API: POST Request ===');
     const user = await getCurrentUser();
-    
+
     if (!user) {
       console.log('Unauthorized: No user found');
       return NextResponse.json(
@@ -103,8 +104,14 @@ export async function POST(request: NextRequest) {
     console.log('Database user found:', dbUser.id);
 
     const body = await request.json();
-    const { title, content, status = 'draft', tags = [], featuredImage, metaDescription } = body;
+    console.log('Request body:', {
+      ...body,
+      content: body.content ? body.content.substring(0, 100) + '...' : null
+    });
 
+    const { title, content, featuredImage, status, metaDescription } = body;
+
+    // Validate required fields
     if (!title || !content) {
       console.log('Missing required fields');
       return NextResponse.json(
@@ -113,28 +120,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Create the post
+    console.log('Creating post...');
     const post = await prisma.post.create({
       data: {
         title,
         content,
-        published: status === 'published',
-        authorId: dbUser.id,
-        tags: {
-          connect: tags.map((tagId: string) => ({ id: tagId }))
-        },
-      },
-      include: {
+        featuredImage,
+        status: status || 'draft',
+        metaDescription: metaDescription || content.substring(0, 160),
         author: {
-          select: {
-            name: true
-          }
-        },
-        tags: true,
-      },
+          connect: { id: dbUser.id }
+        }
+      }
     });
 
-    console.log('Post created:', post.id);
-    return NextResponse.json({ success: true, data: post });
+    console.log('Post created successfully:', post.id);
+    return NextResponse.json({ data: post });
   } catch (error) {
     console.error('Error creating post:', error);
     return NextResponse.json(
